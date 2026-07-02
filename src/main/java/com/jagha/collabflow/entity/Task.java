@@ -37,6 +37,12 @@ public class Task {
 
     private Instant updatedAt;
 
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
+    }
+
     @PreUpdate
     public void onUpdate() {
         this.updatedAt = Instant.now();

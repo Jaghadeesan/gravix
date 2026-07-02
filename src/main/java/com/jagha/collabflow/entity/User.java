@@ -15,7 +15,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private Long passwordHash;
+    private String passwordHash;
 
     @Column(nullable = false)
     private String fullName;
@@ -23,10 +23,15 @@ public class User {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Instant.now();
+    }
+
     public User() {
     }
 
-    public User(Long id, String email, Long passwordHash, String fullName, Instant createdAt) {
+    public User(Long id, String email, String passwordHash, String fullName, Instant createdAt) {
         this.id = id;
         this.email = email;
         this.passwordHash = passwordHash;
@@ -50,11 +55,11 @@ public class User {
         this.email = email;
     }
 
-    public Long getPasswordHash() {
+    public String getPasswordHash() {
         return passwordHash;
     }
 
-    public void setPasswordHash(Long passwordHash) {
+    public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
 

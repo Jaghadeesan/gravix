@@ -24,6 +24,11 @@ public class Board {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Instant.now();
+    }
+
     public Board() {}
 
     public Board(Long id, String name, String description, User owner, Instant createdAt) {
