@@ -94,20 +94,23 @@ public class TaskService {
 
     // Convert entity to DTO - keeps controller/service clean
     private TaskResponse toResponse(Task task) {
-        return new TaskResponse(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getStatus(),
-                task.getAssignee().getId(),
-                task.getAssignee().getFullName(),
-                task.getBoard().getId(),
-                task.getBoard().getName(),
-                task.getDueDate(),
-                task.getCreatedAt(),
-                task.getUpdatedAt()
+        TaskResponse response = new TaskResponse();
+        response.setId(task.getId());
+        response.setTitle(task.getTitle());
+        response.setDescription(task.getDescription());
+        response.setStatus(task.getStatus());
+        response.setBoardId(task.getBoard().getId());
+        response.setBoardName(task.getBoard().getName());
+        response.setDueDate(task.getDueDate());
+        response.setCreatedAt(task.getCreatedAt());
+        response.setUpdatedAt(task.getUpdatedAt());
 
+        // Null check — assignee is optional, task can exist without one
+        if (task.getAssignee() != null) {
+            response.setAssigneeId(task.getAssignee().getId());
+            response.setAssigneeName(task.getAssignee().getFullName());
+        }
 
-        );
+        return response;
     }
 }
