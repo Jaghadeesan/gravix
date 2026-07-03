@@ -31,10 +31,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // If no token, continue filter chain (Security will handle unauthorized)
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
+            return;
         }
 
         // Extract token
-        String token = authHeader.substring("Bearer ".length());
+        String token = authHeader.substring(7);
 
         // Validate token and set authentication
         if(jwtUtil.isTokenValid(token)) {
