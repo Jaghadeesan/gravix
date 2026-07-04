@@ -1,5 +1,6 @@
 package com.jagha.collabflow.service;
 
+import com.jagha.collabflow.dto.event.TaskEvent;
 import com.jagha.collabflow.dto.task.TaskRequest;
 import com.jagha.collabflow.dto.task.TaskResponse;
 import com.jagha.collabflow.entity.Board;
@@ -9,6 +10,7 @@ import com.jagha.collabflow.entity.User;
 import com.jagha.collabflow.repository.BoardRespository;
 import com.jagha.collabflow.repository.TaskRespository;
 import com.jagha.collabflow.repository.UserRepository;
+import com.jagha.collabflow.service.interfaces.EventPublisherInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +37,8 @@ public class TaskServiceTest {
     private UserRepository userRepository;
     @Mock
     private AuthHelper authHelper;
+    @Mock
+    private EventPublisherInterface eventPublisher;
 
     @InjectMocks
     private TaskService taskService;
@@ -73,6 +77,7 @@ public class TaskServiceTest {
     void createTask_Success() {
         when(boardRespository.findById(1L)).thenReturn(Optional.of(mockBoard));
         when(taskRespository.save(any(Task.class))).thenReturn(mockTask);
+        doNothing().when(eventPublisher).publishTaskEvent(any(TaskEvent.class));
 
         TaskResponse response = taskService.createTask(taskRequest);
 
@@ -80,6 +85,7 @@ public class TaskServiceTest {
         assertEquals("Test Task", response.getTitle());
         assertEquals(TaskStatus.TODO, response.getStatus());
         verify(taskRespository, times(1)).save(any(Task.class));
+        verify(eventPublisher, times(1)).publishTaskEvent(any(TaskEvent.class));
     }
 
     @Test

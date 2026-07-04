@@ -30,6 +30,8 @@ public class BoardService implements BoardServiceInterface {
         board.setOwner(currentUser);
 
         Board saved = boardRespository.save(board);
+        log.info("[BOARD_CREATE] Board created successfully. boardId={}",
+                saved.getId());
         return toResponse(saved);
     }
 
@@ -56,6 +58,7 @@ public class BoardService implements BoardServiceInterface {
                 .orElseThrow(() -> new RuntimeException("Board not found"));
         // Authorization check — only owner can update
         if(!currentUser.getId().equals(board.getOwner().getId())) {
+            log.error("You don't have permission to update this board");
             throw new RuntimeException("You don't have permission to update this board");
         }
 
@@ -72,9 +75,11 @@ public class BoardService implements BoardServiceInterface {
                 .orElseThrow(() -> new RuntimeException("Board not found"));
 
         if(!currentUser.getId().equals(board.getOwner().getId())) {
+            log.error("You don't have permission to delete this board");
             throw new RuntimeException("You don't have permission to delete this board");
         }
         boardRespository.delete(board);
+        log.info("[BOARD_DELETE] Board deleted successfully. boardId={}", id);
     }
 
     // Convert entity to DTO — keeps controller/service clean

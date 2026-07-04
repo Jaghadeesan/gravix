@@ -2,6 +2,7 @@ package com.jagha.collabflow.contoller;
 
 import com.jagha.collabflow.dto.task.TaskRequest;
 import com.jagha.collabflow.dto.task.TaskResponse;
+import com.jagha.collabflow.entity.TaskStatus;
 import com.jagha.collabflow.service.TaskService;
 import com.jagha.collabflow.service.interfaces.TaskServiceInterface;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,4 +56,10 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/status")
+    @Operation(summary = "Transition task to new status",
+                description = "Validates transition via State Machine. Invalid transistions return 400")
+    public ResponseEntity<TaskResponse> transitionStatus(@PathVariable Long id, @RequestParam TaskStatus newStatus) {
+        return ResponseEntity.ok(taskService.transitionTaskStatus(id, newStatus));
+    }
 }

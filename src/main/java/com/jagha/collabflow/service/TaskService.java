@@ -10,6 +10,7 @@ import com.jagha.collabflow.entity.User;
 import com.jagha.collabflow.repository.BoardRespository;
 import com.jagha.collabflow.repository.TaskRespository;
 import com.jagha.collabflow.repository.UserRepository;
+import com.jagha.collabflow.service.interfaces.EventPublisherInterface;
 import com.jagha.collabflow.service.interfaces.TaskServiceInterface;
 import com.jagha.collabflow.statemachine.TaskState;
 import com.jagha.collabflow.statemachine.TaskStateFactory;
@@ -32,9 +33,12 @@ public class TaskService implements TaskServiceInterface {
     private final BoardRespository boardRespository;
     private final UserRepository userRepository;
     private final AuthHelper authHelper;
-    private final KafkaProducerService kafkaProducerService;
+    private final EventPublisherInterface eventPublisher;
 
+    @Transactional
     public TaskResponse createTask(TaskRequest request) {
+        log.info("[TASK_CREATE] Creating task. boardId={}, title={}",
+                request.getBoardId(), request.getTitle());
 
         Board board = boardRespository.findById(request.getBoardId())
                 .orElseThrow(() -> new RuntimeException("Board not found"));
@@ -52,7 +56,26 @@ public class TaskService implements TaskServiceInterface {
                     .orElseThrow(() -> new RuntimeException("User not found"));
             task.setAssignee(user);
         }
-        return toResponse(taskRespository.save(task));
+
+        Task saved = taskRespository.save(task);
+
+        log.info("[TASK_CREATE] Task created successfully. taskId={}, boardId={}",
+                saved.getId(), saved.getBoard().getId());
+
+        // Publish created event
+        TaskEvent event = TaskEvent.builder()
+                .eventId(java.util.UUID.randomUUID().toString())
+                .eventType(TaskEvent.TASK_CREATED)
+                .taskId(saved.getId())
+                .taskTitle(saved.getTitle())
+                .boardId(saved.getBoard().getId())
+                .newStatus(TaskStatus.TODO)
+                .occurredAt(java.time.Instant.now())
+                .build();
+
+        eventPublisher.publishTaskEvent(event);
+
+        return toResponse(saved);
     }
 
     public List<TaskResponse> getTasksByBoard(Long boardId) {
@@ -170,7 +193,7 @@ public class TaskService implements TaskServiceInterface {
                 .occurredAt(Instant.now())
                 .build();
 
-        kafkaProducerService.publicTaskEvent(event);
+        eventPublisher.publishTaskEvent(event);
         return toResponse(savedTask);
     }
 }
