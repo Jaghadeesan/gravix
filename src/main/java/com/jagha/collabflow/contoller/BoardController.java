@@ -3,6 +3,7 @@ package com.jagha.collabflow.contoller;
 import com.jagha.collabflow.dto.board.BoardRequest;
 import com.jagha.collabflow.dto.board.BoardResponse;
 import com.jagha.collabflow.service.BoardService;
+import com.jagha.collabflow.service.interfaces.BoardServiceInterface;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -18,7 +19,7 @@ import java.util.List;
 @SecurityRequirement(name = "bearerAuth")
 public class BoardController {
 
-    private final BoardService boardService;
+    private final BoardServiceInterface boardService;
 
     public BoardController(BoardService boardService) {
         this.boardService = boardService;

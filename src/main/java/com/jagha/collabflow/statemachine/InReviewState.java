@@ -9,19 +9,19 @@ public class InReviewState implements TaskState {
     }
 
     @Override
-    public TaskState transistionToInProgress() {
+    public TaskState transitionToInProgress() {
         return new InProgressState();
     }
 
     @Override
-    public TaskState transistionToInReview() {
+    public TaskState transitionToInReview() {
         throw new IllegalStateException(
                 "Task already in IN_REVIEW state"
         );
     }
 
     @Override
-    public TaskState transistionToDone() {
+    public TaskState transitionToDone() {
         return new DoneState();
     }
 

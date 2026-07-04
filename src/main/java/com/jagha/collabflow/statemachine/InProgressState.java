@@ -9,18 +9,18 @@ public class InProgressState implements TaskState {
     }
 
     @Override
-    public TaskState transistionToInProgress() {
+    public TaskState transitionToInProgress() {
         throw new IllegalStateException(
                 "Task is already IN_PROGRESS");
     }
 
     @Override
-    public TaskState transistionToInReview() {
+    public TaskState transitionToInReview() {
         return new InReviewState();
     }
 
     @Override
-    public TaskState transistionToDone() {
+    public TaskState transitionToDone() {
         // Allow direct done from in-progress for simple tasks
         return new DoneState();
     }

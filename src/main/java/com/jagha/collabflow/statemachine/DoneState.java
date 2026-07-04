@@ -9,19 +9,19 @@ public class DoneState implements TaskState {
     }
 
     @Override
-    public TaskState transistionToInProgress() {
+    public TaskState transitionToInProgress() {
         throw new IllegalStateException(
                 "Cannot reopen a DONE task to IN_PROGRESS directly. Reopen to TODO first."
         );
     }
 
     @Override
-    public TaskState transistionToInReview() {
+    public TaskState transitionToInReview() {
         throw new IllegalStateException("Cannot move a DONE task to IN_REVIEW.");
     }
 
     @Override
-    public TaskState transistionToDone() {
+    public TaskState transitionToDone() {
         throw new IllegalStateException("Task is already DONE.");
     }
 

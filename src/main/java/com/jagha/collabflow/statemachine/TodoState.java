@@ -9,18 +9,18 @@ public class TodoState implements TaskState{
     }
 
     @Override
-    public TaskState transistionToInProgress() {
+    public TaskState transitionToInProgress() {
         return new InProgressState();
     }
 
     @Override
-    public TaskState transistionToInReview() {
+    public TaskState transitionToInReview() {
         throw new IllegalStateException(
                 "Cannot move to IN_REVIEW directly from TODO. Move to IN_PROGRESS first");
     }
 
     @Override
-    public TaskState transistionToDone() {
+    public TaskState transitionToDone() {
         throw new IllegalStateException(
                 "Cannot move to DONE directly from TODO. Complete the workflow first");
     }

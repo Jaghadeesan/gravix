@@ -5,21 +5,21 @@ import com.jagha.collabflow.dto.board.BoardResponse;
 import com.jagha.collabflow.entity.Board;
 import com.jagha.collabflow.entity.User;
 import com.jagha.collabflow.repository.BoardRespository;
+import com.jagha.collabflow.service.interfaces.BoardServiceInterface;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BoardService {
+@RequiredArgsConstructor
+@Slf4j
+public class BoardService implements BoardServiceInterface {
 
     private final BoardRespository boardRespository;
     private final AuthHelper authHelper;
-
-    public BoardService(BoardRespository boardRespository, AuthHelper authHelper) {
-        this.boardRespository = boardRespository;
-        this.authHelper = authHelper;
-    }
 
     public BoardResponse createBoard(BoardRequest request) {
         User currentUser = authHelper.getCurrentUser();

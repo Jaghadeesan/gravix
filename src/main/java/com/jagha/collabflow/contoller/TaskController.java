@@ -3,6 +3,7 @@ package com.jagha.collabflow.contoller;
 import com.jagha.collabflow.dto.task.TaskRequest;
 import com.jagha.collabflow.dto.task.TaskResponse;
 import com.jagha.collabflow.service.TaskService;
+import com.jagha.collabflow.service.interfaces.TaskServiceInterface;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ import java.util.List;
 @SecurityRequirement(name = "bearerAuth")
 public class TaskController {
 
-    private final TaskService taskService;
+    private final TaskServiceInterface taskService;
 
     public TaskController(TaskService taskService) {
         this.taskService = taskService;
