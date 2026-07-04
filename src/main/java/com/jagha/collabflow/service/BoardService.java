@@ -5,21 +5,21 @@ import com.jagha.collabflow.dto.board.BoardResponse;
 import com.jagha.collabflow.entity.Board;
 import com.jagha.collabflow.entity.User;
 import com.jagha.collabflow.repository.BoardRespository;
+import com.jagha.collabflow.service.interfaces.BoardServiceInterface;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BoardService {
+@RequiredArgsConstructor
+@Slf4j
+public class BoardService implements BoardServiceInterface {
 
     private final BoardRespository boardRespository;
     private final AuthHelper authHelper;
-
-    public BoardService(BoardRespository boardRespository, AuthHelper authHelper) {
-        this.boardRespository = boardRespository;
-        this.authHelper = authHelper;
-    }
 
     public BoardResponse createBoard(BoardRequest request) {
         User currentUser = authHelper.getCurrentUser();
@@ -30,6 +30,8 @@ public class BoardService {
         board.setOwner(currentUser);
 
         Board saved = boardRespository.save(board);
+        log.info("[BOARD_CREATE] Board created successfully. boardId={}",
+                saved.getId());
         return toResponse(saved);
     }
 
@@ -56,6 +58,7 @@ public class BoardService {
                 .orElseThrow(() -> new RuntimeException("Board not found"));
         // Authorization check — only owner can update
         if(!currentUser.getId().equals(board.getOwner().getId())) {
+            log.error("You don't have permission to update this board");
             throw new RuntimeException("You don't have permission to update this board");
         }
 
@@ -72,9 +75,11 @@ public class BoardService {
                 .orElseThrow(() -> new RuntimeException("Board not found"));
 
         if(!currentUser.getId().equals(board.getOwner().getId())) {
+            log.error("You don't have permission to delete this board");
             throw new RuntimeException("You don't have permission to delete this board");
         }
         boardRespository.delete(board);
+        log.info("[BOARD_DELETE] Board deleted successfully. boardId={}", id);
     }
 
     // Convert entity to DTO — keeps controller/service clean
