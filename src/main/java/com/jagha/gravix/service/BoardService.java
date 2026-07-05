@@ -1,0 +1,96 @@
+package com.jagha.gravix.service;
+
+import com.jagha.gravix.dto.board.BoardRequest;
+import com.jagha.gravix.dto.board.BoardResponse;
+import com.jagha.gravix.entity.Board;
+import com.jagha.gravix.entity.User;
+import com.jagha.gravix.repository.BoardRespository;
+import com.jagha.gravix.service.interfaces.BoardServiceInterface;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class BoardService implements BoardServiceInterface {
+
+    private final BoardRespository boardRespository;
+    private final AuthHelper authHelper;
+
+    public BoardResponse createBoard(BoardRequest request) {
+        User currentUser = authHelper.getCurrentUser();
+
+        Board board = new Board();
+        board.setName(request.getName());
+        board.setDescription(request.getDescription());
+        board.setOwner(currentUser);
+
+        Board saved = boardRespository.save(board);
+        log.info("[BOARD_CREATE] Board created successfully. boardId={}",
+                saved.getId());
+        return toResponse(saved);
+    }
+
+    public List<BoardResponse> getMyBoards() {
+        User currentUser = authHelper.getCurrentUser();
+
+        return boardRespository.findByOwnerId(currentUser.getId())
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    public BoardResponse getBoardById(Long id) {
+        Board board = boardRespository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Board not found"));
+
+        return toResponse(board);
+    }
+
+    public BoardResponse updateBoard(Long id, BoardRequest request) {
+        User currentUser = authHelper.getCurrentUser();
+
+        Board board = boardRespository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Board not found"));
+        // Authorization check — only owner can update
+        if(!currentUser.getId().equals(board.getOwner().getId())) {
+            log.error("You don't have permission to update this board");
+            throw new RuntimeException("You don't have permission to update this board");
+        }
+
+        board.setName(request.getName());
+        board.setDescription(request.getDescription());
+
+        return toResponse(boardRespository.save(board));
+    }
+
+    public void deleteBoard(Long id) {
+        User currentUser = authHelper.getCurrentUser();
+
+        Board board = boardRespository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Board not found"));
+
+        if(!currentUser.getId().equals(board.getOwner().getId())) {
+            log.error("You don't have permission to delete this board");
+            throw new RuntimeException("You don't have permission to delete this board");
+        }
+        boardRespository.delete(board);
+        log.info("[BOARD_DELETE] Board deleted successfully. boardId={}", id);
+    }
+
+    // Convert entity to DTO — keeps controller/service clean
+    private BoardResponse toResponse(Board board) {
+        return new BoardResponse(
+                board.getId(),
+                board.getName(),
+                board.getDescription(),
+                board.getOwner().getId(),
+                board.getOwner().getFullName(),
+                board.getCreatedAt()
+        );
+    }
+}
