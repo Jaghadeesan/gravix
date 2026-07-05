@@ -1,0 +1,20 @@
+package com.jagha.gravix.repository;
+
+import com.jagha.gravix.entity.Task;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface TaskRespository extends JpaRepository<Task,Long> {
+
+    // All tasks for a board
+    List<Task> findByBoardId(Long boardId);
+
+    // Tasks assigned to a specific user
+    List<Task> findByAssigneeId(Long assigneeId);
+
+    // Tasks filtered by status within a board
+    List<Task> findByBoardIdAndStatus(Long boardId,String status);
+}

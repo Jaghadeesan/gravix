@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.jagha</groupId>
-	<artifactId>collabflow</artifactId>
+	<artifactId>gravix</artifactId>
+	<name>gravix</name>
+	<description>Graph intelligence for modern teams</description>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
 	<url/>
 	<licenses>
 		<license/>
