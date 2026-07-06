@@ -1,7 +1,10 @@
 package com.jagha.gravix.graph;
 
+import lombok.Getter;
+
 import java.util.List;
 
+@Getter
 public class TopologicalSortResult {
 
     private final boolean hasCycle;
