@@ -8,7 +8,7 @@ import com.jagha.gravix.entity.Task;
 import com.jagha.gravix.entity.TaskStatus;
 import com.jagha.gravix.entity.User;
 import com.jagha.gravix.repository.BoardRespository;
-import com.jagha.gravix.repository.TaskRespository;
+import com.jagha.gravix.repository.TaskRepository;
 import com.jagha.gravix.repository.UserRepository;
 import com.jagha.gravix.service.interfaces.EventPublisherInterface;
 import com.jagha.gravix.service.interfaces.TaskServiceInterface;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TaskService implements TaskServiceInterface {
 
-    private final TaskRespository taskRespository;
+    private final TaskRepository taskRepository;
     private final BoardRespository boardRespository;
     private final UserRepository userRepository;
     private final AuthHelper authHelper;
@@ -57,7 +57,7 @@ public class TaskService implements TaskServiceInterface {
             task.setAssignee(user);
         }
 
-        Task saved = taskRespository.save(task);
+        Task saved = taskRepository.save(task);
 
         log.info("[TASK_CREATE] Task created successfully. taskId={}, boardId={}",
                 saved.getId(), saved.getBoard().getId());
@@ -79,20 +79,20 @@ public class TaskService implements TaskServiceInterface {
     }
 
     public List<TaskResponse> getTasksByBoard(Long boardId) {
-        return taskRespository.findByBoardId(boardId)
+        return taskRepository.findByBoardId(boardId)
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
     public TaskResponse getTaskById(Long id) {
-        Task task = taskRespository.findById(id)
+        Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
         return toResponse(task);
     }
 
     public TaskResponse updateTask(Long id, TaskRequest request) {
-        Task task = taskRespository.findById(id)
+        Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
         task.setTitle(request.getTitle());
@@ -110,13 +110,13 @@ public class TaskService implements TaskServiceInterface {
                     .orElseThrow(() -> new RuntimeException("User not found"));
             task.setAssignee(user);
         }
-        return toResponse(taskRespository.save(task));
+        return toResponse(taskRepository.save(task));
     }
 
     public void deleteTask(Long id) {
-        Task task = taskRespository.findById(id)
+        Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
-        taskRespository.delete(task);
+        taskRepository.delete(task);
     }
 
     // Convert entity to DTO - keeps controller/service clean
@@ -148,7 +148,7 @@ public class TaskService implements TaskServiceInterface {
                 taskId, newStatus);
         User currentUser = authHelper.getCurrentUser();
 
-        Task task = taskRespository.findById(taskId)
+        Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> {
                     log.warn("[TASK_TRANSITION] Task not found. taskId={}", taskId);
                     return new RuntimeException("Task not found: " + taskId);
@@ -174,7 +174,7 @@ public class TaskService implements TaskServiceInterface {
         };
 
         task.setStatus(newState.getStatus());
-        Task savedTask = taskRespository.save(task);
+        Task savedTask = taskRepository.save(task);
 
         log.info("[TASK_TRANSITION] Status transition successful. " +
                         "taskId={}, from={}, to={}, updatedBy={}",

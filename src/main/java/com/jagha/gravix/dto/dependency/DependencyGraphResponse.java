@@ -11,6 +11,7 @@ public class DependencyGraphResponse {
 
     private Long boardId;
     private List<Long> topologicalOrder;
+    private List<Long> criticalPath;
     private int criticalPathLength;
     private boolean hasCycle;
     private List<Long> cyclePath;

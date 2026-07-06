@@ -3,7 +3,6 @@ package com.jagha.gravix.repository;
 import com.jagha.gravix.entity.TaskDependency;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -33,6 +32,6 @@ public interface TaskDependencyRepository extends JpaRepository<TaskDependency, 
     Optional<TaskDependency> findByDependentTaskIdAndDependentTaskId(Long dependentTaskId, Long dependencyTaskId);
 
     // Check existence without fetching
-    boolean existsByDependentTaskIdAndDependentTaskId(Long dependentTaskId, Long dependencyTaskId);
+    boolean existsByDependentTaskIdAndDependencyTaskId(Long dependentTaskId, Long dependencyTaskId);
 
 }

@@ -46,7 +46,7 @@ public class CriticalPathCalculator {
         // Process in topological order
         for(Long node : topoOrder) {
             for(Long neighbor : adjacencyList.getOrDefault(node, Collections.emptyList())) {
-                int newDistance = dp.get(neighbor) + 1;
+                int newDistance = dp.get(node) + 1;
                 if(newDistance > dp.getOrDefault(neighbor, 0)) {
                     dp.put(neighbor, newDistance);
                     predecessor.put(neighbor, node);
