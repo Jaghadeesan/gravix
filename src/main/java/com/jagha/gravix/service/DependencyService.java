@@ -79,7 +79,7 @@ public class DependencyService implements DependencyServiceInterface {
     @Override
     @Transactional
     public void removeDependency(Long dependencyTaskId, Long dependentTaskId) {
-        TaskDependency dependency = taskDependencyRepository.findByDependentTaskIdAndDependentTaskId(dependentTaskId, dependencyTaskId)
+        TaskDependency dependency = taskDependencyRepository.findByDependentTaskIdAndDependencyTaskId(dependentTaskId, dependencyTaskId)
                 .orElseThrow(() -> new RuntimeException("Dependency not found"));
         taskDependencyRepository.delete(dependency);
         log.info("[DEPENDENCY] Dependency removed. " +

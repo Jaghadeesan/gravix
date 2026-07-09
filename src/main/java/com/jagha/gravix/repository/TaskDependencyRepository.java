@@ -29,7 +29,7 @@ public interface TaskDependencyRepository extends JpaRepository<TaskDependency, 
     List<TaskDependency> findByBoardId(@Param("boardId") Long boardId);
 
     // Check if specific dependency already exists
-    Optional<TaskDependency> findByDependentTaskIdAndDependentTaskId(Long dependentTaskId, Long dependencyTaskId);
+    Optional<TaskDependency> findByDependentTaskIdAndDependencyTaskId(Long dependentTaskId, Long dependencyTaskId);
 
     // Check existence without fetching
     boolean existsByDependentTaskIdAndDependencyTaskId(Long dependentTaskId, Long dependencyTaskId);
