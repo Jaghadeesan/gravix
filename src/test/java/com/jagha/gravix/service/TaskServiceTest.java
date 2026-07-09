@@ -8,7 +8,7 @@ import com.jagha.gravix.entity.Task;
 import com.jagha.gravix.entity.TaskStatus;
 import com.jagha.gravix.entity.User;
 import com.jagha.gravix.repository.BoardRespository;
-import com.jagha.gravix.repository.TaskRespository;
+import com.jagha.gravix.repository.TaskRepository;
 import com.jagha.gravix.repository.UserRepository;
 import com.jagha.gravix.service.interfaces.EventPublisherInterface;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 public class TaskServiceTest {
 
     @Mock
-    private TaskRespository taskRespository;
+    private TaskRepository taskRepository;
     @Mock
     private BoardRespository boardRespository;
     @Mock
@@ -76,7 +76,7 @@ public class TaskServiceTest {
     @Test
     void createTask_Success() {
         when(boardRespository.findById(1L)).thenReturn(Optional.of(mockBoard));
-        when(taskRespository.save(any(Task.class))).thenReturn(mockTask);
+        when(taskRepository.save(any(Task.class))).thenReturn(mockTask);
         doNothing().when(eventPublisher).publishTaskEvent(any(TaskEvent.class));
 
         TaskResponse response = taskService.createTask(taskRequest);
@@ -84,7 +84,7 @@ public class TaskServiceTest {
         assertNotNull(response);
         assertEquals("Test Task", response.getTitle());
         assertEquals(TaskStatus.TODO, response.getStatus());
-        verify(taskRespository, times(1)).save(any(Task.class));
+        verify(taskRepository, times(1)).save(any(Task.class));
         verify(eventPublisher, times(1)).publishTaskEvent(any(TaskEvent.class));
     }
 
@@ -100,16 +100,16 @@ public class TaskServiceTest {
 
     @Test
     void getTaskById_NotFound_ThrowsException() {
-        when(taskRespository.findById(99L)).thenReturn(Optional.empty());
+        when(taskRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> taskService.getTaskById(99L));
     }
 
     @Test
     void deleteTask_Success() {
-        when(taskRespository.findById(1L)).thenReturn(Optional.of(mockTask));
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(mockTask));
 
         taskService.deleteTask(1L);
-        verify(taskRespository, times(1)).delete(mockTask);
+        verify(taskRepository, times(1)).delete(mockTask);
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TaskRespository extends JpaRepository<Task,Long> {
+public interface TaskRepository extends JpaRepository<Task,Long> {
 
     // All tasks for a board
     List<Task> findByBoardId(Long boardId);
