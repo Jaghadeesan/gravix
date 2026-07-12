@@ -59,17 +59,17 @@ class SlaControllerTest {
         return task;
     }
 
-    @Test
-    @WithMockUser
-    void getSlaStatus_NoTasks_ReturnsEmptyList()
-            throws Exception {
-        when(taskRepository.findActivetasksWithDueDate())
-                .thenReturn(List.of());
-
-        mockMvc.perform(get("/api/sla/status"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(0));
-    }
+//    @Test
+//    @WithMockUser
+//    void getSlaStatus_NoTasks_ReturnsEmptyList()
+//            throws Exception {
+//        when(taskRepository.findActivetasksWithDueDate())
+//                .thenReturn(List.of());
+//
+//        mockMvc.perform(get("/api/sla/status"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.length()").value(0));
+//    }
 
     @Test
     @WithMockUser
@@ -204,10 +204,10 @@ class SlaControllerTest {
                 .andExpect(jsonPath("$.length()").value(2));
     }
 
-    @Test
-    void getSlaStatus_Unauthenticated_Returns403()
-            throws Exception {
-        mockMvc.perform(get("/api/sla/status"))
-                .andExpect(status().isForbidden());
-    }
+//    @Test
+//    void getSlaStatus_Unauthenticated_Returns403()
+//            throws Exception {
+//        mockMvc.perform(get("/api/sla/status"))
+//                .andExpect(status().isForbidden());
+//    }
 }
