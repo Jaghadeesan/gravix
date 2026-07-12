@@ -91,4 +91,50 @@ public class SlaMonitoringServiceTest {
         verify(notificationService, times(1))
                 .sendSlaBreachNotification(any());
     }
+
+    @Test
+    void checkSlaBreaches_TaskWithNullDueDate_SkipsGracefully() {
+        Task noDeadline = new Task();
+        noDeadline.setId(1L);
+        noDeadline.setTitle("No deadline");
+        noDeadline.setBoard(mockBoard);
+        noDeadline.setStatus(TaskStatus.IN_PROGRESS);
+        noDeadline.setDueDate(null);
+
+        when(taskRepository.findActivetasksWithDueDate())
+                .thenReturn(List.of(noDeadline));
+
+        // Should not throw even with null due date
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(
+                () -> slaMonitoringService.checkSlaBreaches());
+    }
+
+    @Test
+    void checkSlaBreaches_WarningTask_DoesNotPublishKafkaEvent() {
+        Task warning = createTask(1L, "Warning Task",
+                Instant.now().plus(30, ChronoUnit.MINUTES),
+                TaskStatus.IN_PROGRESS);
+
+        when(taskRepository.findActivetasksWithDueDate())
+                .thenReturn(List.of(warning));
+
+        slaMonitoringService.checkSlaBreaches();
+
+        // Warnings log but do NOT publish Kafka events
+        verify(eventPublisher, never()).publishTaskEvent(any());
+        verify(notificationService, never())
+                .sendSlaBreachNotification(any());
+    }
+
+    @Test
+    void checkSlaBreaches_DoneTasksNotIncluded_NoEvents() {
+        // findActivetasksWithDueDate excludes DONE tasks via query
+        // so empty list means no events
+        when(taskRepository.findActivetasksWithDueDate())
+                .thenReturn(List.of());
+
+        slaMonitoringService.checkSlaBreaches();
+
+        verify(eventPublisher, never()).publishTaskEvent(any());
+    }
 }

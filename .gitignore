@@ -18,6 +18,7 @@ target/
 *.iws
 *.iml
 *.ipr
+.env.local
 application-local.properties
 src/test/resources/application.properties
 
